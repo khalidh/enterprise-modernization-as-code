@@ -1,0 +1,17 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Module version="141020000" xmlns="http://xmlns.oracle.com/Forms">
+  <FormModule Name="CUSTOMER_FORM" DirtyInfo="true" Title="Gestion des clients" ConsoleWindow="WINDOW1" MenuModule="DEFAULT&amp;SMARTBAR">
+    <Coordinate CharacterCellWidth="9" RealUnit="Point" DefaultFontScaling="true" CharacterCellHeight="16" CoordinateSystem="Real"/>
+    <Block Name="CLIENTS" DeleteAllowed="true" QueryDataSourceName="CLIENTS" DirtyInfo="true" InsertAllowed="true" ScrollbarWidth="18" QueryAllowed="true" ScrollbarLength="158" UpdateAllowed="true">
+      <Item Name="ID_CLIENT" Prompt="Id Client" XPosition="150" Required="true" YPosition="80" DirtyInfo="true" TabPageName="" Width="200" CanvasName="CANVAS_CLIENT" ColumnName="ID_CLIENT" DataType="Number" Height="25"/>
+      <Item Name="NOM_CLIENT" Prompt="Nom Client" XPosition="150" YPosition="120" DirtyInfo="true" TabPageName="" Width="200" CanvasName="CANVAS_CLIENT" MaximumLength="100" ColumnName="NOM_CLIENT" Height="25"/>
+         <Item Name="BTN_BONJOUR" ItemType="Push Button" XPosition="400" YPosition="120" Width="100" CanvasName="CANVAS_CLIENT" Height="25" Label="Ancien bouton"/>
+      <Item Name="EMAIL" Prompt="Email" XPosition="150" YPosition="160" DirtyInfo="true" TabPageName="" Width="300" CanvasName="CANVAS_CLIENT" MaximumLength="150" ColumnName="EMAIL" Height="25"/>
+      <DataSourceColumn DSCLength="0" DSCMandatory="true" DSCPrecision="38" DSCName="ID_CLIENT" DSCScale="0" DSCType="NUMBER" DSCNochildren="false" Type="Query"/>
+      <DataSourceColumn DSCLength="100" DSCMandatory="false" DSCPrecision="0" DSCName="NOM_CLIENT" DSCScale="0" DSCType="VARCHAR2" DSCNochildren="false" Type="Query"/>
+      <DataSourceColumn DSCLength="150" DSCMandatory="false" DSCPrecision="0" DSCName="EMAIL" DSCScale="0" DSCType="VARCHAR2" DSCNochildren="false" Type="Query"/>
+    </Block>
+    <Canvas Name="CANVAS_CLIENT" DirtyInfo="true" Width="720" WindowName="WINDOW1" Height="378" ViewportHeight="378" ViewportWidth="720"/>
+    <Window Name="WINDOW1" DirtyInfo="true" Title="Gestion des clients" Width="720" Height="378"/>
+  </FormModule>
+</Module>
