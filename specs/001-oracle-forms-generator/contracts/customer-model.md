@@ -1,7 +1,6 @@
-# Customer Model Contract
+# Contrat du modèle client
 
-`model/customer.yaml` is the source of truth for the generated form's name,
-title, fields, buttons, labels, types, and database-column mappings.
+`model/customer.yaml` est la source de vérité pour le nom et le titre du formulaire généré, ses champs, ses boutons, leurs libellés et leurs types, ainsi que les associations aux colonnes de la base de données.
 
 ```yaml
 form:
@@ -25,19 +24,8 @@ form:
       label: Dire bonjour
 ```
 
-`form.name`, each object's `name` and `label`, and each field's supported
-`type` are required. Names must be valid Oracle Forms identifiers and unique
-across fields and buttons. Supported field types are `text` and `number`.
+`form.name`, le `name` et le `label` de chaque objet, ainsi que le `type` pris en charge de chaque champ sont obligatoires. Les noms doivent être des identifiants Oracle Forms valides et uniques parmi les champs et les boutons. Les types de champ pris en charge sont `text` et `number`.
 
-`field.column` optionally maps the generated Forms item name to a database
-column. It defaults to `field.name`. `field.length` optionally sets the maximum
-length for text fields; otherwise the matching template prototype supplies the
-default.
+`field.column` associe facultativement le nom de l'élément Forms généré à une colonne de base de données. Par défaut, sa valeur est `field.name`. `field.length` définit facultativement la longueur maximale des champs texte; sinon, la valeur par défaut provient du prototype correspondant dans le template.
 
-The Oracle Forms XML template supplies the form structure and prototypes for
-field and button presentation. During generation, the field and button items
-inside its target data block are rebuilt from the YAML: items omitted from the
-model are removed from the generated output, and items named in the model are
-created from a compatible prototype even when their names are not in the
-template. The original template remains unchanged. The data block, canvas,
-window, and other Oracle-specific structure are preserved.
+Le template XML Oracle Forms fournit la structure du formulaire et les prototypes de présentation des champs et des boutons. Pendant la génération, les éléments de champ et de bouton du bloc de données cible sont reconstruits à partir du YAML : les éléments absents du modèle sont supprimés du résultat généré, et les éléments nommés dans le modèle sont créés à partir d'un prototype compatible même si leurs noms ne figurent pas dans le template. Le template original reste inchangé. Le bloc de données, le canevas, la fenêtre et les autres structures propres à Oracle sont préservés.

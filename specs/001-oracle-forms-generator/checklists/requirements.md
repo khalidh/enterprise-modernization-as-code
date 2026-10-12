@@ -1,37 +1,37 @@
-# Specification Quality Checklist: Oracle Forms YAML-to-XML Generator
+# Liste de contrôle de la qualité de la spécification : générateur YAML vers XML Oracle Forms
 
-**Purpose**: Validate specification completeness and quality before proceeding to planning
-**Created**: 2026-10-09
-**Feature**: [spec.md](../spec.md)
+**Objectif** : vérifier l'exhaustivité et la qualité de la spécification avant de passer à la planification
+**Créée le** : 2026-10-09
+**Fonctionnalité** : [spec.md](../spec.md)
 
-## Content Quality
+## Qualité du contenu
 
-- [x] No implementation details (languages, frameworks, APIs)
-- [x] Focused on user value and business needs
-- [x] Written for non-technical stakeholders
-- [x] All mandatory sections completed
+- [x] Aucun détail d'implémentation (langages, frameworks, API)
+- [x] Le contenu porte sur la valeur utilisateur et les besoins métier
+- [x] Le document est destiné à des parties prenantes non techniques
+- [x] Toutes les sections obligatoires sont renseignées
 
-## Requirement Completeness
+## Exhaustivité des exigences
 
-- [x] No [NEEDS CLARIFICATION] markers remain
-- [x] Requirements are testable and unambiguous
-- [x] Success criteria are measurable
-- [x] Success criteria are technology-agnostic (no implementation details)
-- [x] All acceptance scenarios are defined
-- [x] Edge cases are identified
-- [x] Scope is clearly bounded
-- [x] Dependencies and assumptions identified
+- [x] Aucun marqueur [NEEDS CLARIFICATION] ne subsiste
+- [x] Les exigences sont testables et sans ambiguïté
+- [x] Les critères de réussite sont mesurables
+- [x] Les critères de réussite sont indépendants des technologies (sans détails d'implémentation)
+- [x] Tous les scénarios d'acceptation sont définis
+- [x] Les cas limites sont recensés
+- [x] Le périmètre est clairement délimité
+- [x] Les dépendances et les hypothèses sont identifiées
 
-## Feature Readiness
+## Préparation de la fonctionnalité
 
-- [x] All functional requirements have clear acceptance criteria
-- [x] User scenarios cover primary flows
-- [x] Feature meets measurable outcomes defined in Success Criteria
-- [x] No implementation details leak into specification
+- [x] Toutes les exigences fonctionnelles ont des critères d'acceptation clairs
+- [x] Les scénarios utilisateur couvrent les parcours principaux
+- [x] La fonctionnalité satisfait les résultats mesurables définis dans les critères de réussite
+- [x] Aucun détail d'implémentation ne s'est glissé dans la spécification
 
-## Notes
+## Remarques
 
-- The user explicitly requires pytest; preserve that test-runner constraint during planning while keeping the specification focused on user-visible behavior.
-- Oracle conversion is conditionally testable and is reported unavailable when the required tools are absent.
-- The input model and XML template in the repository are currently empty; their concrete schema and Oracle Forms 14.1.2 provenance must be established during planning before implementation.
-- Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`.
+- L'utilisateur exige explicitement pytest; conserver cette contrainte sur le lanceur de tests pendant la planification, tout en gardant la spécification centrée sur le comportement visible par l'utilisateur.
+- La conversion Oracle peut être testée sous condition; elle est signalée comme indisponible si les outils requis sont absents.
+- Le modèle d'entrée et le template XML du dépôt sont actuellement vides; leur schéma concret et leur provenance Oracle Forms 14.1.2 doivent être établis pendant la planification, avant l'implémentation.
+- Les éléments incomplets nécessitent une mise à jour de la spécification avant `/speckit-clarify` ou `/speckit-plan`.

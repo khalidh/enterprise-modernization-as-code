@@ -1,48 +1,48 @@
-# Implementation Plan: Oracle Forms YAML-to-XML Generator
+# Plan d'implémentation : générateur YAML vers XML Oracle Forms
 
-**Branch**: `001-oracle-forms-generator` | **Date**: 2026-10-09 | **Spec**: [spec.md](spec.md)
+**Branche** : `001-oracle-forms-generator` | **Date** : 2026-10-09 | **Spécification** : [spec.md](spec.md)
 
-**Input**: Feature specification from `specs/001-oracle-forms-generator/spec.md`
+**Entrée** : spécification de la fonctionnalité dans `specs/001-oracle-forms-generator/spec.md`
 
-## Summary
+## Résumé
 
-Build a Python plugin pipeline that safely loads and validates `customer.yaml`, edits only the designated form, field, and button nodes in an Oracle Forms 14.1.2 XML export using `xml.etree.ElementTree`, validates the result, and writes per-run artifacts under `generated/oracle-forms/`. Keep generation, XML validation, pytest orchestration, Oracle conversion, and AI repair in separate modules. Make Oracle conversion and AI repair configurable capabilities; retain JSON reports and error logs for every run.
+Construire un pipeline de plugin Python qui charge et valide de manière sûre `customer.yaml`, modifie uniquement les nœuds désignés du formulaire, du champ et du bouton dans un export XML Oracle Forms 14.1.2 à l'aide de `xml.etree.ElementTree`, valide le résultat et écrit les artefacts de chaque exécution sous `generated/oracle-forms/`. Séparer la génération, la validation XML, l'orchestration de pytest, la conversion Oracle et la réparation par IA dans des modules distincts. Rendre la conversion Oracle et la réparation par IA configurables; conserver un rapport JSON et des journaux d'erreurs pour chaque exécution.
 
-## Technical Context
+## Contexte technique
 
-**Language/Version**: Python 3; develop and verify in the repository's Python 3.13.15 environment; no compatibility claim below Python 3.11.
+**Langage/version** : Python 3; développer et vérifier dans l'environnement Python 3.13.15 du dépôt; aucune compatibilité n'est garantie en dessous de Python 3.11.
 
-**Primary Dependencies**: PyYAML for safe YAML parsing; `xml.etree.ElementTree` from the Python standard library for XML tree manipulation; pytest for regression tests. Oracle Forms conversion utilities are optional external tools.
+**Dépendances principales** : PyYAML pour analyser YAML de manière sûre; `xml.etree.ElementTree` de la bibliothèque standard Python pour manipuler l'arbre XML; pytest pour les tests de régression. Les utilitaires de conversion Oracle Forms sont des outils externes facultatifs.
 
-**Storage**: Local files only. Inputs and the original template remain in their source locations; reports, logs, generated XML, and optional FMB outputs are stored under `generated/oracle-forms/`.
+**Stockage** : fichiers locaux uniquement. Les entrées et le template original restent à leur emplacement source; les rapports, journaux, XML générés et éventuels fichiers FMB sont stockés sous `generated/oracle-forms/`.
 
-**Testing**: pytest, launched and captured through a dedicated test-runner module. Converter tests use a fake executable by default and do not require an Oracle installation.
+**Tests** : pytest, lancé et capturé par un module dédié d'exécution des tests. Par défaut, les tests du convertisseur utilisent un faux exécutable et ne nécessitent pas d'installation Oracle.
 
-**Target Platform**: Python 3 on the project development platform. The optional Oracle conversion process must run in an environment supported by the installed Oracle Forms 14.1.2 tools.
+**Plateforme cible** : Python 3 sur la plateforme de développement du projet. Le processus facultatif de conversion Oracle doit s'exécuter dans un environnement pris en charge par les outils Oracle Forms 14.1.2 installés.
 
-**Project Type**: Local Python plugin/adapter with a command-line orchestration entry point.
+**Type de projet** : plugin/adaptateur Python local avec un point d'entrée d'orchestration en ligne de commande.
 
-**Performance Goals**: No latency target for the MVP; one small form is processed per run.
+**Objectifs de performance** : aucun objectif de latence pour le MVP; un petit formulaire est traité par exécution.
 
-**Constraints**: Use the genuine Oracle Forms 14.1.2 export as the XML baseline; never modify the original XML template or source FMB; validate YAML before generation; preserve non-target XML subtrees; retain per-run JSON and error logs; run pytest after each code or generated-artifact change; stop AI repair after at most three attempts.
+**Contraintes** : utiliser un véritable export Oracle Forms 14.1.2 comme base XML; ne jamais modifier le template XML original ni le FMB source; valider YAML avant la génération; préserver les sous-arbres XML non ciblés; conserver les rapports JSON et journaux d'erreurs par exécution; lancer pytest après chaque modification du code ou d'un artefact généré; arrêter la réparation par IA après trois tentatives au maximum.
 
-**Scale/Scope**: One `HELLO_WORLD` form per model with one field and one button; one XML result and optionally one converted FMB per run.
+**Échelle/périmètre** : un formulaire `HELLO_WORLD` par modèle, avec un champ et un bouton; un résultat XML et, éventuellement, un FMB converti par exécution.
 
-## Constitution Check
+## Vérification de la constitution
 
-**Pre-design gate: PASS**
+**Contrôle préalable à la conception : RÉUSSI**
 
-- Template compatibility: generation edits a real Forms 14.1.2 export; the repository's current template file is empty, so obtaining and verifying the export is a prerequisite to implementation.
-- Preservation and FMB immutability: edit only target nodes in a parsed copy; never write to the template or source FMB paths.
-- Input validation: safely parse and validate the full YAML model before creating generated XML.
-- Test-gated changes: keep pytest orchestration independent and run it after each code or generated-artifact modification.
-- Bounded, auditable repair: AI repair is isolated, limited to three attempts, and retains reports and logs.
+- Compatibilité du template : la génération modifie un véritable export Forms 14.1.2; le fichier template actuel du dépôt est vide, l'obtention et la vérification de l'export sont donc des prérequis à l'implémentation.
+- Préservation et immutabilité du FMB : modifier uniquement les nœuds ciblés dans une copie analysée; ne jamais écrire dans les chemins du template ou du FMB source.
+- Validation des entrées : analyser et valider sans risque le modèle YAML complet avant de créer le XML généré.
+- Modifications soumises aux tests : isoler l'orchestration de pytest et l'exécuter après chaque modification du code ou d'un artefact généré.
+- Réparation limitée et auditable : isoler la réparation par IA, la limiter à trois tentatives et conserver les rapports et journaux.
 
-No constitution exception is required. Oracle tool availability is an optional integration condition, not a reason to weaken XML generation or validation.
+Aucune dérogation à la constitution n'est nécessaire. La disponibilité des outils Oracle est une condition d'intégration facultative, et non un motif pour affaiblir la génération ou la validation XML.
 
-## Project Structure
+## Structure du projet
 
-### Documentation (this feature)
+### Documentation (cette fonctionnalité)
 
 ```text
 specs/001-oracle-forms-generator/
@@ -58,18 +58,18 @@ specs/001-oracle-forms-generator/
 └── tasks.md
 ```
 
-### Source Code (repository root)
+### Code source (racine du dépôt)
 
 ```text
 adapters/oracle-forms/
 ├── plugin.yaml
 ├── generator/
-│   ├── generate.py          # Template-based XML generation only
-│   ├── validate.py          # YAML and generated XML validation
-│   ├── orchestrate.py       # Per-run pipeline and artifact publication
-│   ├── test_runner.py       # pytest process orchestration and test logs
-│   ├── oracle_converter.py  # Configured optional XML-to-FMB process
-│   └── repair_loop.py       # Provider-neutral, bounded AI repair
+│   ├── generate.py          # Génération XML basée uniquement sur le template
+│   ├── validate.py          # Validation YAML et XML généré
+│   ├── orchestrate.py       # Pipeline par exécution et publication des artefacts
+│   ├── test_runner.py       # Orchestration de pytest et journaux de test
+│   ├── oracle_converter.py  # Processus facultatif et configurable de conversion XML vers FMB
+│   └── repair_loop.py       # Réparation IA limitée et indépendante du fournisseur
 └── templates/
 	└── hello_world.xml      # Genuine Oracle Forms 14.1.2 export
 agents/forms-repair/SKILL.md
@@ -78,20 +78,20 @@ generated/oracle-forms/<form>/<run-id>/
 tests/test_oracle_forms.py
 ```
 
-**Structure Decision**: Extend the existing adapter layout rather than introducing a new package tree. Keep module boundaries aligned with the user-requested responsibilities. `orchestrate.py` owns ordering and reporting but contains no XML-editing, validation, pytest, converter, or AI-provider implementation. Each run receives a unique output directory so a later failure cannot erase earlier diagnostics.
+**Décision de structure** : étendre l'organisation d'adaptateurs existante plutôt que d'introduire une nouvelle arborescence de paquets. Aligner les limites des modules sur les responsabilités demandées. `orchestrate.py` gère l'ordre des opérations et les rapports, sans implémenter la modification XML, la validation, pytest, le convertisseur ni le fournisseur d'IA. Chaque exécution dispose d'un répertoire de sortie unique afin qu'un échec ultérieur ne puisse pas effacer les diagnostics précédents.
 
-## Phase 0: Research
+## Phase 0 : Recherche
 
-See [research.md](research.md). The architecture choices are resolved. Two environment assets remain implementation prerequisites rather than open design questions: a verified Forms 14.1.2 XML export and a locally configured Oracle conversion executable when FMB conversion is to be exercised.
+Voir [research.md](research.md). Les choix d'architecture sont arrêtés. Deux éléments d'environnement restent des prérequis d'implémentation plutôt que des questions de conception ouvertes : un export XML Forms 14.1.2 vérifié et un exécutable de conversion Oracle configuré localement pour tester la conversion FMB.
 
-## Phase 1: Design & Contracts
+## Phase 1 : Conception et contrats
 
-- [Data model](data-model.md) defines the validated form model, generated run, report, and error records.
-- [Customer model contract](contracts/customer-model.md) defines the YAML shape and MVP object constraints.
-- [Plugin configuration contract](contracts/plugin-config.md) defines template/output paths, converter settings, and opt-in repair settings.
-- [Run report schema](contracts/run-report.schema.json) defines the JSON status, stages, outputs, and errors.
-- [Quickstart](quickstart.md) describes prerequisites and end-to-end validation without requiring Oracle tools for the XML MVP.
+- Le [modèle de données](data-model.md) définit le modèle de formulaire validé, l'exécution générée, le rapport et les enregistrements d'erreur.
+- Le [contrat du modèle client](contracts/customer-model.md) définit la structure YAML et les contraintes d'objets du MVP.
+- Le [contrat de configuration du plugin](contracts/plugin-config.md) définit les chemins du template et des sorties, les paramètres du convertisseur et ceux de la réparation facultative.
+- Le [schéma du rapport d'exécution](contracts/run-report.schema.json) définit l'état JSON, les étapes, les sorties et les erreurs.
+- Le [guide de démarrage rapide](quickstart.md) décrit les prérequis et la validation de bout en bout sans exiger les outils Oracle pour le MVP XML.
 
-**Post-design gate: PASS**
+**Contrôle après conception : RÉUSSI**
 
-The design preserves all constitution constraints. Generation and repair target only a staged copy; publication follows YAML and XML validation; configured Oracle conversion writes a distinct output; pytest is isolated in `test_runner.py`; each AI repair attempt is bounded and logged. The initial template asset and optional Oracle converter configuration must be supplied before their corresponding integration tests can pass.
+La conception respecte toutes les contraintes de la constitution. La génération et la réparation ne ciblent qu'une copie de travail; la publication a lieu après validation YAML et XML; la conversion Oracle configurée écrit un fichier distinct; pytest est isolé dans `test_runner.py`; chaque tentative de réparation par IA est limitée et journalisée. Le template initial et la configuration facultative du convertisseur Oracle doivent être fournis avant que les tests d'intégration correspondants puissent réussir.

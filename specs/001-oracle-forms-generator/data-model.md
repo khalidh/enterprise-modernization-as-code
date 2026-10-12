@@ -1,54 +1,54 @@
-# Data Model: Oracle Forms YAML-to-XML Generator
+# Modèle de données : générateur YAML vers XML Oracle Forms
 
-## Customer Form Model
+## Modèle de formulaire client
 
-Source: `model/customer.yaml`.
+Source : `model/customer.yaml`.
 
-| Field | Type | Required | Validation |
+| Champ | Type | Obligatoire | Validation |
 |---|---|---:|---|
-| `form.name` | string | Yes | Non-empty; identifies the form in generated XML |
-| `form.objects` | list | Yes | MVP contains exactly one `field` and one `button` |
-| `form.objects[].type` | enum | Yes | `field` or `button`; each type occurs once in the MVP |
-| `form.objects[].name` | string | Yes | Non-empty and unique within the form |
-| `form.objects[].label` | string | Yes | Present; its value is applied to the corresponding template object |
+| `form.name` | chaîne | Oui | Non vide; identifie le formulaire dans le XML généré |
+| `form.objects` | liste | Oui | Le MVP contient exactement un `field` et un `button` |
+| `form.objects[].type` | enum | Oui | `field` ou `button`; chaque type apparaît une fois dans le MVP |
+| `form.objects[].name` | chaîne | Oui | Non vide et unique dans le formulaire |
+| `form.objects[].label` | chaîne | Oui | Présent; sa valeur est appliquée à l'objet correspondant du template |
 
-The MVP example uses form `HELLO_WORLD`, field `NOM_CLIENT`, and button `BTN_BONJOUR`. Names and labels are data, not generator constants. Additional object types and multiple forms are out of scope.
+L'exemple MVP utilise le formulaire `HELLO_WORLD`, le champ `NOM_CLIENT` et le bouton `BTN_BONJOUR`. Les noms et les libellés sont des données, pas des constantes du générateur. Les autres types d'objets et les formulaires multiples sont hors périmètre.
 
-## Oracle Forms Template
+## Template Oracle Forms
 
-Source: `adapters/oracle-forms/templates/hello_world.xml`.
+Source : `adapters/oracle-forms/templates/hello_world.xml`.
 
-The template is a complete Oracle Forms 14.1.2 export with one target form, one field, and one button. Generation resolves these existing nodes from the export and updates only their configured properties. All other elements, including unknown Oracle-specific nodes, remain in the parsed tree. The source file is read-only; generation works on an in-memory or staged copy.
+Le template est un export Oracle Forms 14.1.2 complet contenant un formulaire cible, un champ et un bouton. La génération retrouve ces nœuds existants dans l'export et ne met à jour que leurs propriétés configurées. Tous les autres éléments, y compris les nœuds Oracle inconnus, restent dans l'arbre analysé. Le fichier source est en lecture seule; la génération travaille sur une copie en mémoire ou une copie de travail.
 
-The repository's current template file is empty. A verified Forms 14.1.2 export must be supplied before its selectors and property mapping can be implemented or verified.
+Le fichier template actuel du dépôt est vide. Un export Forms 14.1.2 vérifié doit être fourni avant de pouvoir implémenter ou vérifier ses sélecteurs et le mappage de ses propriétés.
 
-## Generation Run
+## Exécution de génération
 
-| Field | Type | Meaning |
+| Champ | Type | Signification |
 |---|---|---|
-| `run_id` | string | Unique identifier used for the output directory |
-| `form_name` | string | Validated name used to group outputs |
-| `status` | enum | `success` only after required XML validation; otherwise `failure` |
-| `stages` | mapping | Per-stage status for YAML validation, generation, XML validation, and FMB conversion |
-| `outputs` | list | Repository-relative paths and kinds of generated artifacts |
-| `errors` | list | Structured errors associated with the failing stage |
-| `error_log_path` | string | Persistent text log path under the run directory |
+| `run_id` | chaîne | Identifiant unique utilisé pour le répertoire de sortie |
+| `form_name` | chaîne | Nom validé utilisé pour regrouper les sorties |
+| `status` | enum | `success` uniquement après la validation XML requise; sinon `failure` |
+| `stages` | mapping | État de chaque étape : validation YAML, génération, validation XML et conversion FMB |
+| `outputs` | liste | Chemins relatifs au dépôt et types d'artefacts générés |
+| `errors` | liste | Erreurs structurées associées à l'étape en échec |
+| `error_log_path` | chaîne | Chemin du journal texte persistant dans le répertoire d'exécution |
 
-Each run is stored under `generated/oracle-forms/<form-name>/<run-id>/`. Failed runs retain the report and log; invalid XML is not published as a successful output.
+Chaque exécution est stockée sous `generated/oracle-forms/<form-name>/<run-id>/`. Les exécutions en échec conservent le rapport et le journal; un XML invalide n'est pas publié comme résultat réussi.
 
-## Run Error
+## Erreur d'exécution
 
-| Field | Type | Required | Meaning |
+| Champ | Type | Obligatoire | Signification |
 |---|---|---:|---|
-| `code` | string | Yes | Stable machine-readable error category |
-| `stage` | string | Yes | YAML validation, XML generation, XML validation, test execution, AI repair, or FMB conversion |
-| `message` | string | Yes | Actionable human-readable description |
-| `source` | string | No | Input or artifact path when known |
-| `line` | integer | No | One-based source line when available |
-| `column` | integer | No | One-based source column when available |
+| `code` | chaîne | Oui | Catégorie d'erreur stable et lisible par machine |
+| `stage` | chaîne | Oui | Validation YAML, génération XML, validation XML, exécution des tests, réparation IA ou conversion FMB |
+| `message` | chaîne | Oui | Description compréhensible et exploitable |
+| `source` | chaîne | Non | Chemin de l'entrée ou de l'artefact, s'il est connu |
+| `line` | entier | Non | Numéro de ligne source à partir de 1, si disponible |
+| `column` | entier | Non | Numéro de colonne source à partir de 1, si disponible |
 
-## State Flow
+## Cycle d'état
 
 `created -> yaml_validated -> xml_generated -> xml_validated -> [fmb_converted | fmb_unavailable] -> success`
 
-Any required-stage failure leads to `failure`, retains a report and error log, and prevents invalid XML from being published. AI repair may repeat candidate generation/validation/test stages up to three times; each failed attempt is recorded. The original template, input YAML, and source FMB are never states that the workflow writes to.
+Tout échec d'une étape obligatoire entraîne l'état `failure`, conserve un rapport et un journal d'erreurs et empêche la publication d'un XML invalide. La réparation par IA peut répéter les étapes de génération, validation et test d'un candidat jusqu'à trois fois; chaque tentative échouée est enregistrée. Le template original, le YAML d'entrée et le FMB source ne sont jamais modifiés par le processus.

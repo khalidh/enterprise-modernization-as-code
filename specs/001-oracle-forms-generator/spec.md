@@ -1,126 +1,126 @@
-# Feature Specification: Oracle Forms YAML-to-XML Generator
+# Spécification de la fonctionnalité : générateur YAML vers XML Oracle Forms
 
-**Feature Branch**: `001-oracle-forms-generator`
+**Branche de la fonctionnalité** : `001-oracle-forms-generator`
 
-**Created**: 2026-10-09
+**Créée le** : 2026-10-09
 
-**Status**: Draft
+**Statut** : Brouillon
 
-**Input**: User description: Create an MVP plugin that transforms `customer.yaml` into Oracle Forms XML for a `HELLO_WORLD` form with a `NOM_CLIENT` field and `BTN_BONJOUR` button, supports YAML-driven names and labels, validates the generated XML, reports errors in JSON, and converts XML to FMB when Oracle tools are available.
+**Entrée** : description utilisateur : créer un plugin MVP qui transforme `customer.yaml` en XML Oracle Forms pour un formulaire `HELLO_WORLD` comprenant un champ `NOM_CLIENT` et un bouton `BTN_BONJOUR`, permet de configurer les noms et libellés dans YAML, valide le XML généré, signale les erreurs en JSON et convertit le XML en FMB lorsque les outils Oracle sont disponibles.
 
-## User Scenarios & Testing *(mandatory)*
+## Scénarios utilisateur et tests *(obligatoire)*
 
-### User Story 1 - Generate the HELLO_WORLD Form (Priority: P1)
+### Récit utilisateur 1 - Générer le formulaire HELLO_WORLD (Priorité : P1)
 
-As a form developer, I provide a valid customer model and obtain an Oracle Forms XML form based on the supplied Oracle Forms 14.1.2 template, so I can review and use the generated form.
+En tant que développeur de formulaires, je fournis un modèle client valide et obtiens un formulaire XML Oracle Forms basé sur le template Oracle Forms 14.1.2 fourni, afin de pouvoir examiner et utiliser le formulaire généré.
 
-**Why this priority**: Generating the required form is the core value of the MVP.
+**Pourquoi cette priorité** : la génération du formulaire demandé constitue la valeur essentielle du MVP.
 
-**Independent Test**: Provide a valid model for the MVP and verify that one XML output is produced, is well formed, contains the expected form, field, and button, and leaves the original template unchanged.
+**Test indépendant** : fournir un modèle MVP valide et vérifier qu'un fichier XML est produit, qu'il est bien formé, contient le formulaire, le champ et le bouton attendus, et que le template original reste inchangé.
 
-**Acceptance Scenarios**:
+**Scénarios d'acceptation** :
 
-1. **Given** a valid model and an available Oracle Forms 14.1.2 XML template, **When** the user runs the generator, **Then** it produces a well-formed XML form named `HELLO_WORLD` containing a field named `NOM_CLIENT` and a button named `BTN_BONJOUR`.
-2. **Given** a generation run, **When** it completes, **Then** the original template and any source FMB remain unchanged.
+1. **Étant donné** un modèle valide et un template XML Oracle Forms 14.1.2 disponible, **quand** l'utilisateur lance le générateur, **alors** celui-ci produit un formulaire XML bien formé nommé `HELLO_WORLD`, contenant un champ nommé `NOM_CLIENT` et un bouton nommé `BTN_BONJOUR`.
+2. **Étant donné** une génération, **quand** elle se termine, **alors** le template original et tout fichier FMB source restent inchangés.
 
-### User Story 2 - Customize Object Names and Labels (Priority: P2)
+### Récit utilisateur 2 - Personnaliser les noms et libellés des objets (Priorité : P2)
 
-As a form developer, I can change the supported object names and labels in the customer model and have those values reflected in the generated form, so the output matches the customer-specific form definition.
+En tant que développeur de formulaires, je peux modifier les noms et libellés d'objets pris en charge dans le modèle client et retrouver ces valeurs dans le formulaire généré, afin que le résultat corresponde à la définition propre au client.
 
-**Why this priority**: YAML-driven customization makes the generator reusable beyond a single hard-coded example.
+**Pourquoi cette priorité** : la personnalisation pilotée par YAML rend le générateur réutilisable au-delà d'un exemple codé en dur.
 
-**Independent Test**: Change the field and button names and labels in a valid model, generate the form, and compare the corresponding XML object values with the model.
+**Test indépendant** : modifier les noms et libellés du champ et du bouton dans un modèle valide, générer le formulaire et comparer les valeurs des objets XML correspondants à celles du modèle.
 
-**Acceptance Scenarios**:
+**Scénarios d'acceptation** :
 
-1. **Given** a valid model with customized field and button names and labels, **When** the user generates XML, **Then** each supported name and label in the output matches its model value.
-2. **Given** a valid model with the MVP names `NOM_CLIENT` and `BTN_BONJOUR`, **When** the user generates XML, **Then** those names appear on the corresponding field and button rather than being assigned to another object type.
+1. **Étant donné** un modèle valide avec des noms et libellés de champ et de bouton personnalisés, **quand** l'utilisateur génère le XML, **alors** chaque nom et libellé pris en charge dans le résultat correspond à la valeur du modèle.
+2. **Étant donné** un modèle valide utilisant les noms MVP `NOM_CLIENT` et `BTN_BONJOUR`, **quand** l'utilisateur génère le XML, **alors** ces noms figurent respectivement sur le champ et le bouton correspondants, et non sur un autre type d'objet.
 
-### User Story 3 - Diagnose Invalid Input and Output (Priority: P2)
+### Récit utilisateur 3 - Diagnostiquer les entrées et sorties invalides (Priorité : P2)
 
-As a form developer, I receive a machine-readable explanation when the model is invalid or the generated XML fails validation, so I can correct the input without accepting a broken form.
+En tant que développeur de formulaires, je reçois une explication lisible par machine lorsque le modèle est invalide ou que le XML généré échoue à la validation, afin de pouvoir corriger l'entrée sans accepter un formulaire défectueux.
 
-**Why this priority**: Clear validation and error reporting prevent malformed or misleading output from being used.
+**Pourquoi cette priorité** : une validation et des rapports d'erreur clairs évitent d'utiliser un résultat mal formé ou trompeur.
 
-**Independent Test**: Submit malformed YAML, a model missing required values, and a case that produces invalid XML; verify each failure is reported in JSON and no invalid XML is accepted as successful output.
+**Test indépendant** : soumettre un YAML mal formé, un modèle auquel il manque des valeurs obligatoires et un cas produisant un XML invalide; vérifier que chaque échec est signalé en JSON et qu'aucun XML invalide n'est considéré comme un résultat réussi.
 
-**Acceptance Scenarios**:
+**Scénarios d'acceptation** :
 
-1. **Given** malformed YAML or a missing required model value, **When** the user runs generation, **Then** generation stops before producing XML and a JSON error report identifies the failure.
-2. **Given** XML that is not well formed or does not contain the required objects, **When** output validation runs, **Then** the run is reported as failed in JSON and its error details remain available in the error log.
-3. **Given** a successful generation and validation, **When** the user inspects the JSON report, **Then** it reports success and contains no errors.
+1. **Étant donné** un YAML mal formé ou une valeur obligatoire absente du modèle, **quand** l'utilisateur lance la génération, **alors** celle-ci s'arrête avant de produire le XML et un rapport d'erreur JSON identifie l'échec.
+2. **Étant donné** un XML mal formé ou dépourvu des objets requis, **quand** la validation du résultat s'exécute, **alors** l'exécution est signalée comme échouée en JSON et les détails de l'erreur restent disponibles dans le journal.
+3. **Étant donné** une génération et une validation réussies, **quand** l'utilisateur consulte le rapport JSON, **alors** celui-ci indique la réussite et ne contient aucune erreur.
 
-### User Story 4 - Convert XML to FMB When Oracle Tools Are Available (Priority: P3)
+### Récit utilisateur 4 - Convertir le XML en FMB si les outils Oracle sont disponibles (Priorité : P3)
 
-As a form developer with the required Oracle conversion tools available, I can convert the validated XML to an FMB file, so I can continue in the Oracle Forms environment.
+En tant que développeur de formulaires disposant des outils de conversion Oracle requis, je peux convertir le XML validé en fichier FMB, afin de poursuivre le travail dans l'environnement Oracle Forms.
 
-**Why this priority**: FMB conversion completes the downstream workflow but depends on tools that may not be installed in every environment.
+**Pourquoi cette priorité** : la conversion en FMB complète le processus en aval, mais dépend d'outils qui ne sont pas nécessairement installés dans tous les environnements.
 
-**Independent Test**: With Oracle conversion tools available, convert a valid generated XML file and verify that a separate FMB output is produced successfully; without those tools, verify that conversion is reported as unavailable rather than successful.
+**Test indépendant** : lorsque les outils de conversion Oracle sont disponibles, convertir un fichier XML valide et vérifier qu'un fichier FMB distinct est produit; en leur absence, vérifier que la conversion est signalée comme indisponible et non comme réussie.
 
-**Acceptance Scenarios**:
+**Scénarios d'acceptation** :
 
-1. **Given** valid generated XML and available Oracle conversion tools, **When** conversion runs, **Then** it succeeds and writes the FMB output separately from any source FMB.
-2. **Given** valid generated XML and unavailable Oracle conversion tools, **When** the workflow checks conversion, **Then** it clearly reports that conversion could not be run while retaining the XML validation result.
+1. **Étant donné** un XML généré valide et des outils de conversion Oracle disponibles, **quand** la conversion s'exécute, **alors** elle réussit et écrit le FMB à part de tout FMB source.
+2. **Étant donné** un XML généré valide et des outils de conversion Oracle indisponibles, **quand** le processus vérifie la conversion, **alors** il indique clairement que celle-ci n'a pas pu être lancée tout en conservant le résultat de validation XML.
 
-### Edge Cases
+### Cas limites
 
-- The YAML file is missing, empty, malformed, or contains unsupported structure; generation stops and reports the input error in JSON.
-- A required form, object name, or label is absent or empty; validation identifies the missing value before XML generation.
-- A configured name or label contains characters requiring XML escaping; the generated XML remains well formed and preserves the intended text.
-- The XML template is missing or is not the required Oracle Forms 14.1.2 export; generation stops without changing the template or source FMB.
-- XML generation succeeds but XML validation fails; the output is not reported as successful, and error details are retained.
-- Oracle conversion tools are unavailable; XML generation and validation remain independently usable, and FMB conversion is reported as skipped or unavailable.
+- Le fichier YAML est absent, vide, mal formé ou contient une structure non prise en charge; la génération s'arrête et signale l'erreur d'entrée en JSON.
+- Le nom du formulaire, le nom d'un objet ou un libellé obligatoire est absent ou vide; la validation identifie la valeur manquante avant la génération du XML.
+- Un nom ou un libellé configuré contient des caractères nécessitant un échappement XML; le XML généré reste bien formé et préserve le texte voulu.
+- Le template XML est absent ou n'est pas l'export Oracle Forms 14.1.2 requis; la génération s'arrête sans modifier le template ni le FMB source.
+- La génération XML réussit, mais sa validation échoue; le résultat n'est pas déclaré réussi et les détails de l'erreur sont conservés.
+- Les outils de conversion Oracle sont indisponibles; la génération et la validation XML restent utilisables indépendamment, et la conversion FMB est signalée comme ignorée ou indisponible.
 
-## Requirements *(mandatory)*
+## Exigences *(obligatoire)*
 
-### Business Rules
+### Règles métier
 
-- **BR-001**: Each configured field MUST have a name, label, and supported type before it can be generated.
-- **BR-002**: Field and button names MUST be valid Oracle Forms identifiers and MUST be unique across the fields and buttons in the form.
-- **BR-003**: A field type MUST be either `text` or `number`; unsupported types MUST be rejected before XML generation.
-- **BR-004**: A field MAY map to a database column different from its form-object name. If no column is configured, the field-object name is used as the column name.
-- **BR-005**: A text field MAY specify a maximum length, which MUST be a positive integer. When omitted, the compatible template prototype supplies the default length.
-- **BR-006**: Configured field and button labels MUST be applied to their corresponding form objects and preserved in the generated output.
+ - **BR-001** : chaque champ configuré DOIT avoir un nom, un libellé et un type pris en charge avant de pouvoir être généré.
+ - **BR-002** : les noms des champs et des boutons DOIVENT être des identifiants Oracle Forms valides et DOIVENT être uniques parmi les champs et les boutons du formulaire.
+ - **BR-003** : le type d'un champ DOIT être `text` ou `number`; les types non pris en charge DOIVENT être rejetés avant la génération XML.
+ - **BR-004** : un champ PEUT être associé à une colonne de base de données différente du nom de son objet de formulaire. Si aucune colonne n'est configurée, le nom de l'objet champ est utilisé comme nom de colonne.
+ - **BR-005** : un champ texte PEUT définir une longueur maximale, qui DOIT être un entier positif. Si elle est omise, le prototype compatible du template fournit la longueur par défaut.
+ - **BR-006** : les libellés configurés des champs et des boutons DOIVENT être appliqués aux objets correspondants et conservés dans le résultat généré.
 
-### Functional Requirements
+### Exigences fonctionnelles
 
-- **FR-001**: The plugin MUST accept `customer.yaml` as the MVP form model and MUST validate its syntax and required values before generating output.
-- **FR-002**: The plugin MUST generate an Oracle Forms XML form named `HELLO_WORLD` from a template exported by Oracle Forms 14.1.2.
-- **FR-003**: The MVP output MUST include a field named `NOM_CLIENT` and a button named `BTN_BONJOUR` as distinct Oracle Forms objects.
-- **FR-004**: Supported form and object names and labels MUST be configurable through the YAML model and MUST appear on their corresponding generated objects.
-- **FR-005**: The plugin MUST preserve the original XML template and source FMB; generated XML and any converted FMB MUST be written as separate outputs.
-- **FR-006**: The plugin MUST validate generated XML for well-formedness and the presence and names of the required objects before reporting success.
-- **FR-007**: The plugin MUST produce a JSON report for each run that states success or failure and provides an error collection with a description and source location when available.
-- **FR-008**: The plugin MUST retain error logs for input, generation, XML validation, test, and conversion failures so users can diagnose unsuccessful runs.
-- **FR-009**: The feature MUST include an automated regression test suite covering valid generation, YAML-driven customization, invalid input, XML validation, required objects, template preservation, and error reporting.
-- **FR-010**: When Oracle conversion tools are available, the plugin MUST support conversion of validated XML to a separate FMB output and report whether conversion succeeded; when unavailable, it MUST report conversion as unavailable without invalidating successful XML generation and validation.
-- **FR-011**: The automated regression suite MUST run after each code or generated-artifact modification, and automatic correction MUST stop after no more than three attempts for one generation operation.
+ - **FR-001** : le plugin DOIT accepter `customer.yaml` comme modèle de formulaire MVP et DOIT en valider la syntaxe et les valeurs obligatoires avant de générer le résultat.
+ - **FR-002** : le plugin DOIT générer un formulaire XML Oracle Forms nommé `HELLO_WORLD` à partir d'un template exporté par Oracle Forms 14.1.2.
+ - **FR-003** : le résultat MVP DOIT contenir un champ nommé `NOM_CLIENT` et un bouton nommé `BTN_BONJOUR`, sous forme d'objets Oracle Forms distincts.
+ - **FR-004** : les noms pris en charge du formulaire et des objets, ainsi que leurs libellés, DOIVENT être configurables dans le modèle YAML et apparaître sur les objets générés correspondants.
+ - **FR-005** : le plugin DOIT préserver le template XML original et le FMB source; le XML généré et tout FMB converti DOIVENT être écrits dans des fichiers distincts.
+ - **FR-006** : avant de déclarer une réussite, le plugin DOIT vérifier que le XML généré est bien formé et que les objets requis, avec leurs noms, sont présents.
+ - **FR-007** : le plugin DOIT produire un rapport JSON par exécution indiquant la réussite ou l'échec, ainsi qu'une collection d'erreurs comportant une description et, si possible, l'emplacement dans le fichier source.
+ - **FR-008** : le plugin DOIT conserver les journaux d'erreurs liés aux échecs d'entrée, de génération, de validation XML, de test et de conversion, afin que les utilisateurs puissent diagnostiquer les échecs.
+ - **FR-009** : la fonctionnalité DOIT inclure une suite de tests de régression automatisés couvrant la génération valide, la personnalisation pilotée par YAML, les entrées invalides, la validation XML, les objets requis, la préservation du template et les rapports d'erreur.
+ - **FR-010** : si les outils de conversion Oracle sont disponibles, le plugin DOIT pouvoir convertir le XML validé en un fichier FMB distinct et signaler le résultat; s'ils sont indisponibles, il DOIT le signaler sans invalider la réussite de la génération et de la validation XML.
+ - **FR-011** : la suite de régression automatisée DOIT s'exécuter après chaque modification du code ou d'un artefact généré, et la correction automatique DOIT s'arrêter après au plus trois tentatives pour une opération de génération.
 
-### Key Entities *(include if feature involves data)*
+### Entités clés *(si des données sont concernées)*
 
-- **Customer model**: The YAML-provided form definition, including the form name and supported object names and labels.
-- **Form object**: A named Oracle Forms element, including the MVP form, field, and button, with its configured label where applicable.
-- **XML template**: The original Oracle Forms 14.1.2-exported XML document used as the generation baseline and preserved unchanged.
-- **Generated form**: The separate XML output containing the configured form objects and validated before success is reported.
-- **Run report**: The JSON result describing generation, validation, and optional conversion status, including errors when present.
-- **Error log**: Retained diagnostic details for failures during validation, generation, tests, or conversion.
+- **Modèle client** : définition du formulaire fournie en YAML, comprenant le nom du formulaire ainsi que les noms et libellés des objets pris en charge.
+- **Objet de formulaire** : élément Oracle Forms nommé, notamment le formulaire MVP, le champ et le bouton, avec son libellé configuré le cas échéant.
+- **Template XML** : document XML original exporté par Oracle Forms 14.1.2, utilisé comme base de génération et préservé sans modification.
+- **Formulaire généré** : fichier XML distinct contenant les objets de formulaire configurés et validé avant que la réussite soit signalée.
+- **Rapport d'exécution** : résultat JSON décrivant la génération, la validation et l'état de la conversion facultative, y compris les erreurs éventuelles.
+- **Journal d'erreurs** : détails de diagnostic conservés pour les échecs de validation, de génération, de test ou de conversion.
 
-## Success Criteria *(mandatory)*
+## Critères de réussite *(obligatoire)*
 
-### Measurable Outcomes
+### Résultats mesurables
 
-- **SC-001**: All valid MVP model cases in the acceptance suite produce well-formed XML containing exactly one `HELLO_WORLD` form, one `NOM_CLIENT` field, and one `BTN_BONJOUR` button.
-- **SC-002**: In 100% of customization cases in the acceptance suite, generated object names and labels match the corresponding YAML values.
-- **SC-003**: In 100% of invalid-input and invalid-output cases in the acceptance suite, the run reports failure in JSON, identifies the error, and does not report invalid XML as successful.
-- **SC-004**: After every acceptance-suite generation case, the original XML template and any supplied source FMB remain unchanged.
-- **SC-005**: When Oracle conversion tools are available, every conversion acceptance case produces a separate FMB output successfully; when unavailable, the report identifies the conversion as unavailable.
-- **SC-006**: The automated regression suite passes after the final change, and every failed run retains its diagnostic log.
+- **SC-001** : tous les cas de modèle MVP valides de la suite d'acceptation produisent un XML bien formé contenant exactement un formulaire `HELLO_WORLD`, un champ `NOM_CLIENT` et un bouton `BTN_BONJOUR`.
+- **SC-002** : dans 100 % des cas de personnalisation de la suite d'acceptation, les noms et libellés des objets générés correspondent aux valeurs YAML associées.
+- **SC-003** : dans 100 % des cas d'entrée ou de sortie invalide de la suite d'acceptation, l'exécution signale un échec en JSON, identifie l'erreur et ne déclare pas l'XML invalide comme réussi.
+- **SC-004** : après chaque cas de génération de la suite d'acceptation, le template XML original et tout FMB source fourni restent inchangés.
+- **SC-005** : lorsque les outils de conversion Oracle sont disponibles, chaque cas d'acceptation de conversion produit avec succès un FMB distinct; sinon, le rapport indique que la conversion est indisponible.
+- **SC-006** : la suite de régression automatisée réussit après la dernière modification et chaque exécution en échec conserve son journal de diagnostic.
 
-## Assumptions
+## Hypothèses
 
-- The MVP handles one form per input model and supports one field and one button; additional object types and multiple forms are out of scope.
-- The YAML model supplies labels for the form objects; no default label text is prescribed by this specification.
-- The existing project template is an Oracle Forms 14.1.2 export. If it is missing or its provenance cannot be established, generation must fail rather than silently use another template.
-- Oracle conversion utilities may not be installed. Their absence prevents only XML-to-FMB conversion, not XML generation or XML validation.
-- The requested automated regression suite will use pytest; the suite's required behaviors are specified here without depending on a particular test implementation.
+- Le MVP traite un formulaire par modèle d'entrée et prend en charge un champ et un bouton; les autres types d'objets et les formulaires multiples sont hors périmètre.
+- Le modèle YAML fournit les libellés des objets du formulaire; cette spécification n'impose aucun libellé par défaut.
+- Le template existant du projet est un export Oracle Forms 14.1.2. S'il est absent ou si sa provenance ne peut pas être établie, la génération doit échouer plutôt que d'utiliser silencieusement un autre template.
+- Les utilitaires de conversion Oracle peuvent ne pas être installés. Leur absence empêche uniquement la conversion XML vers FMB, pas la génération ni la validation XML.
+- La suite de régression automatisée demandée utilisera pytest; ses comportements requis sont spécifiés ici sans dépendre d'une implémentation de test particulière.
