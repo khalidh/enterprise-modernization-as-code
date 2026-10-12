@@ -1,13 +1,3 @@
-### Business Rules
-
-- **BR-001**: Each configured field MUST have a name, label, and supported type before it can be generated.
-- **BR-002**: Field and button names MUST be valid Oracle Forms identifiers and MUST be unique across the fields and buttons in the form.
-- **BR-003**: A field type MUST be either `text` or `number`; unsupported types MUST be rejected before XML generation.
-- **BR-004**: A field MAY map to a database column different from its form-object name. If no column is configured, the field-object name is used as the column name.
-- **BR-005**: A text field MAY specify a maximum length, which MUST be a positive integer. When omitted, the compatible template prototype supplies the default length.
-- **BR-006**: Configured field and button labels MUST be applied to their corresponding form objects and preserved in the generated output.
-
-### Key Entities *(include if data involved)*
 # Feature Specification: Oracle Forms YAML-to-XML Generator
 
 **Feature Branch**: `001-oracle-forms-generator`
@@ -83,6 +73,15 @@ As a form developer with the required Oracle conversion tools available, I can c
 - Oracle conversion tools are unavailable; XML generation and validation remain independently usable, and FMB conversion is reported as skipped or unavailable.
 
 ## Requirements *(mandatory)*
+
+### Business Rules
+
+- **BR-001**: Each configured field MUST have a name, label, and supported type before it can be generated.
+- **BR-002**: Field and button names MUST be valid Oracle Forms identifiers and MUST be unique across the fields and buttons in the form.
+- **BR-003**: A field type MUST be either `text` or `number`; unsupported types MUST be rejected before XML generation.
+- **BR-004**: A field MAY map to a database column different from its form-object name. If no column is configured, the field-object name is used as the column name.
+- **BR-005**: A text field MAY specify a maximum length, which MUST be a positive integer. When omitted, the compatible template prototype supplies the default length.
+- **BR-006**: Configured field and button labels MUST be applied to their corresponding form objects and preserved in the generated output.
 
 ### Functional Requirements
 
