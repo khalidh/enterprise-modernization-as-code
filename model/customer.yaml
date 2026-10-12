@@ -1,23 +1,23 @@
-
 form:
   name: HELLO_WORLD
   title: Gestion des clients
-
   fields:
     - name: ID_CLIENT2
       type: number
       label: Id Client2
       column: ID_CLIENT
-      
+
     - name: NOM_CLIENT2
       type: text
       label: Nom du client
       column: NOM_CLIENT
-      
+      length: 120
+
     - name: EMAIL
       type: text
       label: Email
       column: EMAIL
+      length: 200
 
   buttons:
     - name: BTN_BONJOUR

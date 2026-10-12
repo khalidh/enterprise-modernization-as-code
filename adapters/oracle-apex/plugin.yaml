@@ -1,0 +1,12 @@
+model: model/customer.yaml
+output_root: generated/oracle-apex
+
+apex:
+  release: 18.2.0.00.12
+  version_date: '2018.05.24'
+  application_id: 9010
+  application_alias: CLIENTS_APP
+  table_name: CLIENTS
+  primary_key_column: ID_CLIENT
+  default_text_length: 255
+  universal_theme_id: 42
